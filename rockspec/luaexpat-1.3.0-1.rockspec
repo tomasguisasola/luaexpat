@@ -1,9 +1,9 @@
 package = "LuaExpat"
-version = "1.3.0-4"
+version = "1.3.0-1"
 source = {
-   url = "http://www.ccpa.puc-rio.br/software/others/luaexpat-1.3-alfa4.tar.gz",
-   md5 = "fd9904676051aa5294ed8763887b174b",
-   dir = "luaexpat-1.3-alfa4",
+   url = "https://github.com/tomasguisasola/luaexpat/archive/v1_3_0.tar.gz",
+   md5 = "b45d9d1caa1c6acf4bfc54802ab8ec4c",
+   dir = "luaexpat-1_3_0",
 }
 description = {
    summary = "XML Expat parsing",
@@ -15,7 +15,7 @@ description = {
    homepage = "http://www.keplerproject.org/luaexpat/"
 }
 dependencies = {
-   "lua >= 5.1"
+   "lua >= 5.0"
 }
 external_dependencies = {
    EXPAT = {
