@@ -20,12 +20,7 @@
 
 #if !defined(LUA_VERSION_NUM)
 /* Lua 5.0 only */
-#define lua_pushliteral(L, s)	\
-	lua_pushstring(L, "" s, (sizeof(s)/sizeof(char))-1)
-
 #define luaL_Reg luaL_reg
-
-#define lua_setfield(L, i, k)   (lua_pushstring(L, k), lua_settable(L, i))
 #endif
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM==501
@@ -39,8 +34,9 @@ static void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
     int i;
     for (i = 0; i < nup; i++)  /* copy upvalues to the top */
       lua_pushvalue(L, -nup);
+    lua_pushstring(L, l->name);
     lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
-    lua_setfield(L, -(nup + 2), l->name);
+    lua_settable(L, -(nup + 3));
   }
   lua_pop(L, nup);  /* remove upvalues */
 }
