@@ -9,7 +9,7 @@ LUA_DIR= /usr/local/share/lua/5.1
 # Lua includes directory (where Lua header files were installed)
 LUA_INC= /usr/local/include
 # Expat includes directory (where Expat header files were installed)
-EXPAT_INC= /usr/local/include
+EXPAT_INC= /usr/include
 
 # OS dependent
 LIB_OPTION= -shared #for Linux
@@ -28,7 +28,7 @@ CWARNS = -Wall -pedantic \
         -Wshadow \
         -Wwrite-strings
 
-CFLAGS = $(CWARNS) -ansi -O2 -I$(LUA_INC) -I$(EXPAT_INC)
+CFLAGS = -fPIC $(CWARNS) -ansi -O2 -I$(LUA_INC) -I$(EXPAT_INC)
 CC = gcc
 
 OBJS= src/lxplib.o
