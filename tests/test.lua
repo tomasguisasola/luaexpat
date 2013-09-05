@@ -2,11 +2,19 @@
 -- See Copyright Notice in license.html
 -- $Id: test.lua,v 1.6 2006/06/08 20:34:52 tomas Exp $
 
-local lxp = require"lxp"
+local lxp
+if string.find (_VERSION, "Lua 5.0") and not package then
+  local cpath = os.getenv"LUA_CPATH" or "/usr/local/lib/lua/5.0/"
+  lxp = assert(loadlib (cpath.."lxp.so", "luaopen_lxp"))()
+  getn = table.getn
+else
+  lxp = require"lxp"
+  getn = ((loadstring or load)"return function (t) return #t end")()
+end
 print (lxp._VERSION)
 
 -- basic test with no preamble
-local p = lxp.new{}
+p = lxp.new{}
 p:setencoding("ISO-8859-1")
 assert(p:parse[[<tag cap="5">hi</tag>]])
 p:close()
@@ -35,13 +43,25 @@ preamble = [[
 ]>
 ]]
 
-local X
-function getargs (...) X = arg end
+--local X
+if string.find (_VERSION, "Lua 5.0") then
+  function getargs (...) X = arg end
+else
+  getargs = assert((loadstring or load)"return function (...) X = { ... } end")()
+end
 
 function xgetargs (c)
-  return function (...)
-    table.insert(arg, 1, c)
-    table.insert(X, arg)
+  if string.find(_VERSION, "Lua 5.0") then
+    return function (...)
+      table.insert(arg, 1, c)
+      table.insert(X, arg)
+    end
+  else
+    return assert((loadstring or load)"local c = ...; return function (...)\
+      local arg = { ... }\
+      table.insert(arg, 1, c)\
+      table.insert(X, arg)\
+    end")(c)
   end
 end
 
@@ -58,10 +78,10 @@ assert(p:parse(preamble))
 assert(p:parse([[
 <to priority="10" xu = "hi">
 ]]))
-assert(X.n == 3 and X[1] == p and X[2] == "to")
+assert(getn(X) == 3 and X[1] == p and X[2] == "to")
 x = X[3]
 assert(x.priority=="10" and x.xu=="hi" and x.method=="POST")
-assert(x[1] == "priority" and x[2] == "xu" and table.getn(x) == 2)
+assert(x[1] == "priority" and x[2] == "xu" and getn(x) == 2)
 assert(p:parse("</to>"))
 assert(p:parse())
 p:close()
@@ -94,7 +114,8 @@ p = lxp.new(callbacks)
 assert(p:parse(preamble))
 assert(p:parse"<to>")
 assert(p:parse"<![CDATA[hi]]>")
-assert(table.getn(X) == 3)
+assert(getn(X) == 3)
+print(X[1][1], X[1][2])
 assert(X[1][1] == "s" and X[1][2] == p)
 assert(X[2][1] == "c" and X[2][2] == p and X[2][3] == "hi")
 assert(X[3][1] == "e" and X[3][2] == p)
@@ -200,7 +221,7 @@ assert(p:parse(preamble))
 assert(p:parse[[<hihi explanation="test-unparsed"/>]])
 p:close()
 assert(X[2] == "test-unparsed" and X[3] == "/base" and
-       X[4] == "unparsed.txt" and X[6] == "txt" and X.n == 6)
+       X[4] == "unparsed.txt" and X[6] == "txt" and getn(X) == 6)
 
 
 
@@ -220,13 +241,13 @@ assert(p:parse[[
 ]])
 p:close()
 x = X[1]
-assert(x[1] == "sn" and x[3] == "space" and x[4] == "a/namespace" and table.getn(x) == 4)
+assert(x[1] == "sn" and x[3] == "space" and x[4] == "a/namespace" and getn(x) == 4)
 x = X[3]
 assert(x[1] == "s" and x[3] == "a/namespace?a")
 x = X[4]
 assert(x[1] == "e" and x[3] == "a/namespace?a")
 x = X[6]
-assert(x[1] == "en" and x[3] == "space" and table.getn(x) == 3)
+assert(x[1] == "en" and x[3] == "space" and getn(x) == 3)
 
 ----------------------------
 print("testing doctype declarations")
@@ -313,14 +334,14 @@ assert(stopped == true, "parser not stopped")
 -- test for GC
 print("\ntesting garbage collection")
 collectgarbage(); collectgarbage()
-local x = gcinfo()
+local x = (gcinfo and gcinfo() or collectgarbage("count"))
 for i=1,100000 do
   -- due to a small bug in Lua...
-  if math.mod(i, 100) == 0 then collectgarbage() end
+  if (math.fmod or math.mod)(i, 100) == 0 then collectgarbage() end
   lxp.new({})
 end
 collectgarbage(); collectgarbage()
-assert(math.abs(gcinfo() - x) <= 2)
+assert(math.abs((gcinfo and gcinfo() or collectgarbage("count")) - x) <= 2)
 
 
 print"OK"
