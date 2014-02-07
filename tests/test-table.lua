@@ -1,13 +1,14 @@
 #!/usr/local/bin/lua
 
-local lom = require "lxp.lom"
+local totable = require "lxp.totable"
 
 local tests = {
 	{
 		[[<abc a1="A1" a2="A2">inside tag `abc'</abc>]],
 		{
-			tag="abc",
-			attr = { "a1", "a2", a1 = "A1", a2 = "A2", },
+			[0] = "abc",
+			a1 = "A1",
+			a2 = "A2",
 			"inside tag `abc'",
 		},
 	},
@@ -16,12 +17,12 @@ local tests = {
 	<asdf>some text</asdf>
 </qwerty>]],
 		{
-			tag = "qwerty",
-			attr = { "q1", "q2", q1 = "q1", q2 = "q2", },
+			[0] = "qwerty",
+			q1 = "q1",
+			q2 = "q2",
 			"\n\t",
 			{
-				tag = "asdf",
-				attr = {},
+				[0] = "asdf",
 				"some text",
 			},
 			"\n",
@@ -81,7 +82,7 @@ end
 
 for i, s in ipairs(tests) do
 	--s = string.gsub (s, "[\n\r\t]", "")
-	local ds = assert (lom.parse ([[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]))
+	local ds = assert (totable.parse ([[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]))
 	--print(table._tostring(ds))
 	print(table.equal (ds, s[2]))
 end
