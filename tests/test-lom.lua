@@ -38,7 +38,7 @@ function table._tostring (tab, indent, spacing)
         table.insert (s, spacing..indent)
         local t = type(nome)
 		if t == "string" then
-            table.insert (s, string.format ("[%q] = ", tostring (nome)))
+            table.insert (s, string.format ("[%q] = ", nome))
 		elseif t == "number" or t == "boolean" then
             table.insert (s, string.format ("[%s] = ", tostring (nome)))
         else
