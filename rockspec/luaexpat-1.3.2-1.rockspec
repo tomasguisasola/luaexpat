@@ -12,10 +12,10 @@ description = {
       Expat library.
    ]],
    license = "MIT/X11",
-   homepage = "http://www.keplerproject.org/luaexpat/"
+   homepage = "http://www.keplerproject.org/luaexpat/",
 }
 dependencies = {
-   "lua >= 5.0 and lua <= 5.2"
+   "lua >= 5.0, <= 5.2"
 }
 external_dependencies = {
    EXPAT = {
@@ -29,10 +29,10 @@ build = {
       sources = { "src/lxplib.c" },
       libraries = { "expat" },
       incdirs = { "$(EXPAT_INCDIR)", "src/" },
-      libdirs = { "$(EXPAT_LIBDIR)" }
+      libdirs = { "$(EXPAT_LIBDIR)" },
     },
-    ["lxp.lom"] = "src/lxp/lom.lua"
-    ["lxp.totable"] = "src/lxp/totable.lua"
+    ["lxp.lom"] = "src/lxp/lom.lua",
+    ["lxp.totable"] = "src/lxp/totable.lua",
    },
    copy_directories = { "doc", "tests" }
 }
