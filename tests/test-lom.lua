@@ -1,6 +1,6 @@
 #!/usr/local/bin/lua
 
-local lom = require "lxp2.lom"
+local lom = require "lxp.lom"
 
 local tests = {
 	{
