@@ -21,7 +21,7 @@ end
 local function endtag (p, tag)
 	local stack = p:getcallbacks().stack
 	local element = tremove(stack)
-	assert(element[0] == tag, "Error while closing element: table[0] shoud be `"..tostring(tag).."' but is `"..tostring(element[0]).."'")
+	assert(element[0] == tag, "Error while closing element: table[0] should be `"..tostring(tag).."' but is `"..tostring(element[0]).."'")
 	local level = #stack
 	tinsert(stack[level], element)
 end
