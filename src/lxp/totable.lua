@@ -102,7 +102,7 @@ local function torecord (t) -- move 1-value subtables to table entries
 				t[v[0]] = v[1]
 				t[i] = false
 			else
-				simplify (v)
+				torecord (v)
 			end
 		end
 	end
