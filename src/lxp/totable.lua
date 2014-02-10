@@ -4,7 +4,7 @@ local lxp = require "lxp"
 
 local table = require"table"
 local tinsert, tremove = table.insert, table.remove
-local assert, pairs, type = assert, pairs, type
+local assert, pairs, tostring, type = assert, pairs, tostring, type
 
 
 local function starttag (p, tag, attr)
@@ -61,4 +61,6 @@ local function parse (o)
 	return c.stack[1][1]
 end
 
-return { parse = parse }
+return {
+	parse = parse,
+}
