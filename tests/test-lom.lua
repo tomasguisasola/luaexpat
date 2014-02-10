@@ -52,8 +52,13 @@ end
 
 
 for i, s in ipairs(tests) do
-	local ds = assert (lom.parse ([[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]))
-	assert(table.equal (ds, s[2]))
+	local doc = [[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]
+
+	local o1 = assert (lom.parse (doc))
+	assert(table.equal (o1, s[2]))
+
+	local o2 = assert (lom.parse (string.gmatch(doc, ".-%>")))
+	assert(table.equal (o2, s[2]))
 end
 
 local o = assert (lom.parse ([[
