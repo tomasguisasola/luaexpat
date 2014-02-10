@@ -1,6 +1,6 @@
 #!/usr/local/bin/lua
 
-local lom = require "lxp.lom"
+local lom = require "lxp2.lom"
 
 local tests = {
 	{
@@ -55,5 +55,30 @@ for i, s in ipairs(tests) do
 	local ds = assert (lom.parse ([[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]))
 	assert(table.equal (ds, s[2]))
 end
+
+local o = assert (lom.parse ([[
+<?xml version="1.0"?>
+<a1>
+	<b1>
+		<c1>t111</c1>
+		<c2>t112</c2>
+	</b1>
+	<b2>
+		<c1>t121</c1>
+		<c2>t122</c2>
+	</b2>
+</a1>]]))
+assert (o.tag == "a1")
+assert (o[1] == "\n\t")
+assert (o[2].tag == "b1")
+assert (o[2][2].tag == "c1")
+local c1 = lom.find_elem (o, "c1")
+assert (type(c1) == "table")
+assert (c1.tag == "c1")
+assert (c1[1] == "t111")
+local next_child = lom.list_children (o)
+assert (next_child().tag == "b1")
+assert (next_child().tag == "b2")
+assert (next_child() == nil)
 
 print"OK"
