@@ -11,7 +11,7 @@ else
   lxp = require"lxp"
   getn = ((loadstring or load)"return function (t) return #t end")()
 end
-print (lxp._VERSION)
+print (lxp._VERSION, lxp._EXPAT_VERSION)
 
 -- basic test with no preamble
 p = lxp.new{}
