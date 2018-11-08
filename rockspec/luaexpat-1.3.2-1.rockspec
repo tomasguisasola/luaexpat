@@ -15,7 +15,7 @@ description = {
    homepage = "http://www.keplerproject.org/luaexpat/",
 }
 dependencies = {
-   "lua >= 5.0, <= 5.2"
+   "lua >= 5.0"
 }
 external_dependencies = {
    EXPAT = {
