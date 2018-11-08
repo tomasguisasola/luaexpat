@@ -2,6 +2,8 @@
 -- See Copyright Notice in license.html
 -- $Id: test.lua,v 1.6 2006/06/08 20:34:52 tomas Exp $
 
+local verbose = ...
+
 local lxp
 if string.find (_VERSION, "Lua 5.0") and not package then
   local cpath = os.getenv"LUA_CPATH" or "/usr/local/lib/lua/5.0/"
@@ -67,7 +69,7 @@ end
 
 
 -------------------------------
-print("testing start/end tags")
+if verbose then print("testing start/end tags") end
 callbacks = {
   StartElement = getargs,
   EndElement = getargs,
@@ -88,7 +90,7 @@ p:close()
 
 
 -------------------------------
-print("testing CharacterData/Cdata")
+if verbose then print("testing CharacterData/Cdata") end
 callbacks = {
   CharacterData = getargs,
 }
@@ -115,7 +117,7 @@ assert(p:parse(preamble))
 assert(p:parse"<to>")
 assert(p:parse"<![CDATA[hi]]>")
 assert(getn(X) == 3)
-print(X[1][1], X[1][2])
+if verbose then print(X[1][1], X[1][2]) end
 assert(X[1][1] == "s" and X[1][2] == p)
 assert(X[2][1] == "c" and X[2][2] == p and X[2][3] == "hi")
 assert(X[3][1] == "e" and X[3][2] == p)
@@ -124,7 +126,7 @@ p:close()
 
 
 -------------------------------
-print("testing ProcessingInstruction")
+if verbose then print("testing ProcessingInstruction") end
 callbacks = {ProcessingInstruction = getargs}
 p = lxp.new(callbacks)
 assert(p:parse[[
@@ -138,7 +140,7 @@ p:close()
 
 
 ------------------------------
-print("testing Comment")
+if verbose then print("testing Comment") end
 callbacks = {Comment = xgetargs"c"; CharacterData = xgetargs"t"}
 X = {}
 p = lxp.new(callbacks)
@@ -158,7 +160,7 @@ assert(X[3][3] == "\nsome more text")
 
 
 ----------------------------
-print("testing ExternalEntity")
+if verbose then print("testing ExternalEntity") end
 entities = {
 ["entity1.xml"] = "<hi/>"
 }
@@ -186,7 +188,7 @@ assert(X[4][1] == "e" and X[4][3] == "to")
 
 
 ----------------------------
-print("testing default handles")
+if verbose then print("testing default handles") end
 text = [[<to> hi &xuxu; </to>]]
 local t = ""
 
@@ -207,7 +209,7 @@ assert(t == preamble..string.gsub(text, "&xuxu;", "is this a xuxu?"))
 
 
 ----------------------------
-print("testing notation declarations and unparsed entities")
+if verbose then print("testing notation declarations and unparsed entities") end
 
 callbacks = {
   UnparsedEntityDecl = getargs,
@@ -226,7 +228,7 @@ assert(X[2] == "test-unparsed" and X[3] == "/base" and
 
 
 ----------------------------
-print("testing namespace declarations")
+if verbose then print("testing namespace declarations") end
 callbacks = { StartNamespaceDecl = xgetargs"sn",
               EndNamespaceDecl = xgetargs"en",
               StartElement = xgetargs"s",
@@ -250,7 +252,7 @@ x = X[6]
 assert(x[1] == "en" and x[3] == "space" and getn(x) == 3)
 
 ----------------------------
-print("testing doctype declarations")
+if verbose then print("testing doctype declarations") end
 
 callbacks = {
   StartDoctypeDecl = getargs
@@ -295,7 +297,7 @@ assert(X[1] == 1  and X[2] == 6 and X[3] == 6)  -- line, column, abs. position
 
 
 
-print("testing errors")
+if verbose then print("testing errors") end
 -- invalid keys
 assert(not pcall(lxp.new, {StatCdata=print}))
 assert(pcall(lxp.new, {StatCdata=print, _nonstrict = true}))
@@ -313,7 +315,7 @@ local status, err = pcall(p.close, p)
 assert(not status and string.find(err, "error closing parser"))
 
 -- closing unfinished document
-print("testing parser:stop()");
+if verbose then print("testing parser:stop()"); end
 local stopped;
 p = lxp.new{
 	StartElement = function (parser, name, attr)
@@ -332,7 +334,7 @@ assert(stopped == true, "parser not stopped")
 
 
 -- test for GC
-print("testing garbage collection")
+if verbose then print("testing garbage collection") end
 collectgarbage(); collectgarbage()
 local x = (gcinfo and gcinfo() or collectgarbage("count"))
 for i=1,100000 do
@@ -341,7 +343,7 @@ for i=1,100000 do
   lxp.new({})
 end
 collectgarbage(); collectgarbage()
-assert(math.abs((gcinfo and gcinfo() or collectgarbage("count")) - x) <= 2)
+assert(math.abs((gcinfo and gcinfo() or collectgarbage("count")) - x) <= 2, "Garbage collection test didn't passed!")
 
 
 print"OK"
