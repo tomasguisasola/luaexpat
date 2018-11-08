@@ -332,7 +332,7 @@ assert(stopped == true, "parser not stopped")
 
 
 -- test for GC
-print("\ntesting garbage collection")
+print("testing garbage collection")
 collectgarbage(); collectgarbage()
 local x = (gcinfo and gcinfo() or collectgarbage("count"))
 for i=1,100000 do

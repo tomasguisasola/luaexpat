@@ -1,19 +1,28 @@
 T= lxp
-V= 1.3.0
+V= 1.3.2
 
-# Installation directories
+# Default prefix
+PREFIX ?= /usr
+
+# Lua version and dirs
+LUA_SYS_VER ?= 5.2 
 # System's libraries directory (where binary libraries will be installed)
-LUA_LIBDIR= /usr/local/lib/lua/5.1
+LUA_LIBDIR ?= $(PREFIX)/lib/lua/$(LUA_SYS_VER)
 # System's lua directory (where Lua libraries will be installed)
-LUA_DIR= /usr/local/share/lua/5.1
+LUA_DIR ?= $(PREFIX)/share/lua/$(LUA_SYS_VER)
 # Lua includes directory (where Lua header files were installed)
-LUA_INC= /usr/local/include
+LUA_INC ?= $(PREFIX)/include/lua$(LUA_SYS_VER)
+
 # Expat includes directory (where Expat header files were installed)
 EXPAT_INC= /usr/include
 
 # OS dependent
-LIB_OPTION= -shared #for Linux
-#LIB_OPTION= -bundle -undefined dynamic_lookup #for MacOS X
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin) # MacOS
+	LIB_OPTION ?= -bundle -undefined dynamic_lookup -mmacosx-version-min=10.3
+else # Linux/BSD
+	LIB_OPTION ?= -shared #for Linux
+endif
 
 LIBNAME= $T.so.$V
 
@@ -26,9 +35,10 @@ CWARNS = -Wall -pedantic \
         -Wnested-externs \
         -Wpointer-arith \
         -Wshadow \
-        -Wwrite-strings
+        -Wwrite-strings \
+        -DLUA_C89_NUMBERS
 
-CFLAGS = -fPIC $(CWARNS) -ansi -O2 -I$(LUA_INC) -I$(EXPAT_INC)
+CFLAGS = -fPIC -std=gnu99 $(CWARNS) -ansi -O2 -I$(LUA_INC) -I$(EXPAT_INC)
 CC = gcc
 
 OBJS= src/lxplib.o
