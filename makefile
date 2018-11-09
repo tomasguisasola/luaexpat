@@ -45,7 +45,7 @@ OBJS= src/lxplib.o
 lib: src/$(LIBNAME)
 
 src/$(LIBNAME) : $(OBJS)
-	$(CC) -o src/$(LIBNAME) $(LIB_OPTION) $(OBJS) -lexpat
+	$(CC) $(CFLAGS) -o src/$(LIBNAME) $(LIB_OPTION) $(OBJS) -lexpat
 
 install:
 	mkdir -p $(LUA_LIBDIR)
