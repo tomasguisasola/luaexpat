@@ -343,7 +343,7 @@ for i=1,100000 do
   lxp.new({})
 end
 collectgarbage(); collectgarbage()
-assert(math.abs((gcinfo and gcinfo() or collectgarbage("count")) - x) <= 2, "Garbage collection test didn't passed!")
+assert(math.abs((gcinfo and gcinfo() or collectgarbage("count")) - x) <= 5, "Garbage collection test didn't passed!")
 
 
 print"OK"
