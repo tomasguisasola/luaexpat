@@ -2,6 +2,9 @@
 
 local lom = require "lxp.lom"
 
+local u_acute_utf8 = string.char(195)..string.char(186) -- C3 BA
+local u_acute_latin1 = string.char(250) -- FA
+
 local tests = {
 	{
 		[[<abc a1="A1" a2="A2">inside tag `abc'</abc>]],
@@ -27,6 +30,70 @@ local tests = {
 			"\n",
 		},
 	},
+	{
+		[[<ul><li>conteudo 1</li><li>conte]]..u_acute_utf8..[[do 2</li></ul>]],
+		encoding = "UTF-8",
+		{
+			tag = "ul",
+			attr = {},
+			{
+				tag = "li",
+				attr = {},
+				"conteudo 1",
+			},
+			{
+				tag = "li",
+				attr = {},
+				"conteúdo 2",
+			},
+		},
+	},
+	{
+		[[<ul><li>Conteudo 1</li><li>Conte]]..u_acute_latin1..[[do 2</li><li>Conte&uacute;do 3</li></ul>]],
+		encoding = "ISO-8859-1",
+		doctype = [[<!DOCTYPE test [<!ENTITY uacute "&#250;">]>]], -- Ok!
+		{
+			tag = "ul",
+			attr = {},
+			{
+				tag = "li",
+				attr = {},
+				"Conteudo 1",
+			},
+			{
+				tag = "li",
+				attr = {},
+				"Conteúdo 2", -- Latin-1 becomes UTF-8
+			},
+			{
+				tag = "li",
+				attr = {},
+				"Conteúdo 3", -- entity becomes a UTF-8 character
+			},
+		},
+	},
+	{
+		[[<ul><li>Conte&uacute;do</li></ul>]],
+		--doctype = [[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">]], --> ignora as entidades
+		--doctype = [[<!DOCTYPE html SYSTEM "about:legacy-compat">]], --> ignora as entidades
+		--doctype = [[<!DOCTYPE html>]], --> undefined entity
+		--doctype = [[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">]], --> sintax error
+		--doctype = [[<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" SYSTEM "http://www.w3.org/TR/html4/strict.dtd">]], --> syntax error
+		--doctype = [[<!DOCTYPE HTMLlat1 PUBLIC "-//W3C//ENTITIES Latin 1//EN//HTML">]], --> syntax error
+		--doctype = [[<!DOCTYPE HTMLlat1 PUBLIC "-//W3C//ENTITIES Latin 1 for XHTML//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent">]], --> ignora entidades
+		--doctype = [[<!DOCTYPE isolat1 PUBLIC "//W3C//ENTITIES Added Latin 1//EN//XML" "http://www.w3.org/2003/entities/2007/isolat1.ent">]], --> ignora entidades
+		doctype = [[<!DOCTYPE test [<!ENTITY uacute "&#250;">]>]], -- Ok!
+		encoding = "UTF-8",
+		{
+			tag = "ul",
+			attr = {},
+			{
+				tag = "li",
+				attr = {},
+				"Conteúdo", -- entity becomes a UTF-8 character
+			},
+		},
+	},
 }
 
 function table.equal (t1, t2)
@@ -43,7 +110,7 @@ function table.equal (t1, t2)
 			end
 		else
 			if val ~= t2[nome] then
-				return false, "["..nome.."]\t"..tostring(val).." ~= "..tostring(t2[nome])
+				return false, "["..nome.."]\t["..tostring(val).."] ~= ["..tostring(t2[nome])..']'
 			end
 		end
 	end
@@ -52,7 +119,10 @@ end
 
 
 for i, s in ipairs(tests) do
-	local doc = [[<?xml version="1.0" encoding="ISO-8859-1"?>]]..s[1]
+	io.write'.'
+	local encoding = s.encoding or "ISO-8859-1"
+	local header = [[<?xml version="1.0" encoding="]]..encoding..[["?>]]..(s.doctype or '')
+	local doc = header..s[1]
 
 	local o1 = assert (lom.parse (doc))
 	assert(table.equal (o1, s[2]))
