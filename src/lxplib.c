@@ -23,7 +23,7 @@
 #define luaL_Reg luaL_reg
 #endif
 
-#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM==501
+#if !defined(luaL_newlibtable) && (!defined LUA_VERSION_NUM || LUA_VERSION_NUM==501)
 /* Lua 5.0 or Lua 5.1 */
 /*
 ** Adapted from Lua 5.2.0
