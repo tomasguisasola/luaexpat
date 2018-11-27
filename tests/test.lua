@@ -223,7 +223,7 @@ assert(p:parse(preamble))
 assert(p:parse[[<hihi explanation="test-unparsed"/>]])
 p:close()
 assert(X[2] == "test-unparsed" and X[3] == "/base" and
-       X[4] == "unparsed.txt" and X[6] == "txt" and getn(X) == 6)
+       X[4] == "unparsed.txt" and X[6] == "txt" and (getn(X) == 6 or getn(X) == 4))
 
 
 
