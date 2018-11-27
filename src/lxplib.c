@@ -23,7 +23,7 @@
 #define luaL_Reg luaL_reg
 #endif
 
-#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM==501
+#if !defined(luaL_newlibtable) && (!defined(LUA_VERSION_NUM) || LUA_VERSION_NUM==501)
 /* Lua 5.0 or Lua 5.1 */
 /*
 ** Adapted from Lua 5.2.0
@@ -568,7 +568,7 @@ static void set_info (lua_State *L) {
 	lua_pushliteral (L, "LuaExpat is a SAX XML parser based on the Expat library");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_VERSION");
-	lua_pushliteral (L, "LuaExpat 1.3.2");
+	lua_pushliteral (L, "LuaExpat 1.3.3");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_EXPAT_VERSION");
 	lua_pushstring (L, XML_ExpatVersion());
