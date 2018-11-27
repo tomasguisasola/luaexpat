@@ -1,11 +1,11 @@
 T= lxp
-V= 1.3.2
+V= 1.3.3
 
 # Default prefix
 PREFIX ?= /usr
 
 # Lua version and dirs
-LUA_SYS_VER ?= 5.2 
+LUA_SYS_VER ?= 5.3
 # System's libraries directory (where binary libraries will be installed)
 LUA_LIBDIR ?= $(PREFIX)/lib/lua/$(LUA_SYS_VER)
 # System's lua directory (where Lua libraries will be installed)
